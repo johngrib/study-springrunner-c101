@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +20,7 @@ import todoapp.core.todos.application.TodoFinder;
 import todoapp.core.todos.domain.Todo;
 
 @RestController
+@RequestMapping("/api/todos")
 public class TodoRestController {
 
 	private final Logger log = LoggerFactory.getLogger(TodoRestController.class);
@@ -30,26 +32,26 @@ public class TodoRestController {
 		this.todoEditor = todoEditor;
 	}
 
-	@GetMapping("/api/todos")
+	@GetMapping
 	public List<Todo> todos() {
 		return todoFinder.getAll();
 	}
 
-	@PostMapping("/api/todos")
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public void create(@RequestBody TodoWriteCommand command) {
 		log.debug("title: {}", command.getTitle());
 		todoEditor.create(command.getTitle());
 	}
 
-	@PutMapping("/api/todos/{id}")
-	public void update(@PathVariable("id") Long id, @RequestBody TodoWriteCommand command) {
+	@PutMapping("/{id}")
+	public void update(@PathVariable Long id, @RequestBody TodoWriteCommand command) {
 		log.debug("id: {}, title: {}, completed: {}", id, command.getTitle(), command.isCompleted());
 		todoEditor.update(id, command.getTitle(), command.isCompleted());
 	}
 
-	@DeleteMapping("/api/todos/{id}")
-	public void delete(@PathVariable("id") Long id) {
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Long id) {
 		log.debug("id: {}", id);
 		todoEditor.delete(id);
 	}
