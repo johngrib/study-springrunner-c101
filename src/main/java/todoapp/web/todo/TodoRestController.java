@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,9 +41,16 @@ public class TodoRestController {
 		todoEditor.create(command.getTitle());
 	}
 
+	@PutMapping("/api/todos/{id}")
+	public void update(@PathVariable("id") Long id, @RequestBody TodoWriteCommand command) {
+		log.debug("id: {}, title: {}, completed: {}", id, command.getTitle(), command.isCompleted());
+		todoEditor.update(id, command.getTitle(), command.isCompleted());
+	}
+
 	// Command 라는 이름은 spring 2.5부터 내려온 규약
 	static class TodoWriteCommand {
 		private String title;
+		private boolean completed;
 
 		public String getTitle() {
 			return title;
@@ -49,6 +58,14 @@ public class TodoRestController {
 
 		public void setTitle(String title) {
 			this.title = title;
+		}
+
+		public boolean isCompleted() {
+			return completed;
+		}
+
+		public void setCompleted(boolean completed) {
+			this.completed = completed;
 		}
 
 	}
