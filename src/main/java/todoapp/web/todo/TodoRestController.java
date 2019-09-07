@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +46,12 @@ public class TodoRestController {
 	public void update(@PathVariable("id") Long id, @RequestBody TodoWriteCommand command) {
 		log.debug("id: {}, title: {}, completed: {}", id, command.getTitle(), command.isCompleted());
 		todoEditor.update(id, command.getTitle(), command.isCompleted());
+	}
+
+	@DeleteMapping("/api/todos/{id}")
+	public void delete(@PathVariable("id") Long id) {
+		log.debug("id: {}", id);
+		todoEditor.delete(id);
 	}
 
 	// Command 라는 이름은 spring 2.5부터 내려온 규약
