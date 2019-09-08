@@ -6,3 +6,4 @@ site:
   author: John Grib
   toggles:
     auth: true
+    onlineUsersCounter: true
