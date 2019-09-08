@@ -44,6 +44,8 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
         // TODO attributes, error 을 사용해서 message 속성을 읽기 좋은 문구로 가공한다.
         // TODO ex) attributes.put("message", "문구");
 
+        log.debug("나는 일하고 있다");
+
         return attributes;
     }
 
