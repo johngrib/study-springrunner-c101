@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,16 +49,19 @@ public class LoginController {
             // 사용자 저장소에 사용자가 있을 경우: 비밀번호 일치 확인
             // 비밀번호가 일치하면: /todos 리다이렉트
             verifier.verify(command.getUsername(), command.getPassword());
-        } catch (UserPasswordNotMatchedException e) {
-            // 비밀번호가 다르면: login 페이지로 돌려보내고, 오류 메시지 노출
-            model.addAttribute("message", e.getMessage());
-            return "login";
         } catch (UserEntityNotFoundException e) {
             // 사용자가 없는 경우: 회원가입 페이지로 돌려보냄
             joinder.join(command.getUsername(), command.getPassword());
         }
 
         return "redirect:/todos";
+    }
+
+    @ExceptionHandler(UserPasswordNotMatchedException.class)
+    public String handlerUserPasswordNotMatchedException(UserPasswordNotMatchedException e, Model model) {
+        // 비밀번호가 다르면: login 페이지로 돌려보내고, 오류 메시지 노출
+        model.addAttribute("message", e.getMessage());
+        return "login";
     }
 
     static class LoginCommand {
