@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.View;
@@ -36,8 +37,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public ErrorAttributes errorAttributes() {
-		return new ReadableErrorAttributes();
+	public ErrorAttributes errorAttributes(MessageSource messageSource) {
+		return new ReadableErrorAttributes(messageSource);
 	}
 
 	/**

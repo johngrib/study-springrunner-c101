@@ -1,18 +1,21 @@
 package todoapp.commons.web.error;
 
+import java.util.Map;
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * 스프링부트에 기본 구현체인 {@link DefaultErrorAttributes}에 message 속성을 덮어쓰기 할 목적으로 작성한 컴포넌트이다.
@@ -28,12 +31,15 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final DefaultErrorAttributes delegate;
 
-    public ReadableErrorAttributes() {
-        this(false);
+    private MessageSource messageSource;
+
+    public ReadableErrorAttributes(MessageSource messageSource) {
+        this(messageSource, false);
     }
 
-    public ReadableErrorAttributes(boolean includeException) {
+    public ReadableErrorAttributes(MessageSource messageSource, boolean includeException) {
         this.delegate = new DefaultErrorAttributes(includeException);
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -45,6 +51,19 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
         // TODO ex) attributes.put("message", "문구");
 
         log.debug("나는 일하고 있다");
+
+//        if (error instanceof MethodArgumentNotValidException) {
+//			attributes.put("message", "사용자 입력 값이 올바르지 않습니다.");
+//		}
+
+		if (Objects.nonNull(error)) {
+			String errorCode = String.format("Exception.%s", error.getClass().getSimpleName());
+			String defaultMessage = error.getMessage();
+			String errorMeesage = messageSource.getMessage(errorCode, new Object[0], defaultMessage,
+					webRequest.getLocale());
+
+			attributes.put("message", errorMeesage);
+		}
 
         return attributes;
     }
