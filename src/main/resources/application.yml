@@ -2,4 +2,7 @@ logging:
   level:
     todoapp: DEBUG
     org.springframework.web: DEBUG
-site.author: John Grib
+site:
+  author: John Grib
+  toggles:
+    auth: true
