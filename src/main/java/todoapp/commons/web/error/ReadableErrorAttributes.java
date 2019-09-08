@@ -1,7 +1,9 @@
 package todoapp.commons.web.error;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,9 +16,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+
+import todoapp.commons.util.ThrowableUtils;
 
 /**
  * 스프링부트에 기본 구현체인 {@link DefaultErrorAttributes}에 message 속성을 덮어쓰기 할 목적으로 작성한 컴포넌트이다.
@@ -66,6 +71,18 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
                         webRequest.getLocale());
 
                 attributes.put("message", errorMeesage);
+            }
+
+            // errors 속성 메시지를 사용자 친화적으로 변경하자
+            BindingResult bindingResult = ThrowableUtils.extractBindingResult(error);
+            if (Objects.nonNull(bindingResult)) {
+                List<String> errors = bindingResult
+                        .getAllErrors()
+                        .stream()
+                        .map(oe -> messageSource.getMessage(oe, webRequest.getLocale()))
+                        .collect(Collectors.toList());
+
+                attributes.put("errors", errors);
             }
         }
 
