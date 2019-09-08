@@ -21,6 +21,7 @@ import todoapp.commons.web.servlet.LoggingHandlerInterceptor;
 import todoapp.commons.web.view.CommaSeparatedValuesView;
 import todoapp.security.UserSessionRepository;
 import todoapp.security.web.method.UserSessionHandlerMethodArgumentResolver;
+import todoapp.security.web.servlet.RolesVerifyHandlerInterceptor;
 
 /**
  * Spring Web MVC 설정
@@ -49,6 +50,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoggingHandlerInterceptor());
         registry.addInterceptor(new ExecutionTimeHandlerInterceptor());
+        registry.addInterceptor(new RolesVerifyHandlerInterceptor(sessionRepository));
     }
 
     @Override
