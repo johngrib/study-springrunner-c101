@@ -7,7 +7,7 @@ import org.springframework.context.MessageSourceResolvable;
  *
  * @author springrunner.kr@gmail.com
  */
-public class TodoEntityNotFoundException extends TodoEntityException implements MessageSourceResolvable {
+public class TodoEntityNotFoundException extends TodoEntityException {
 
     private Long id;
 
@@ -27,11 +27,5 @@ public class TodoEntityNotFoundException extends TodoEntityException implements 
 	public Object[] getArguments() {
 		return new Object[] { String.valueOf(id) };
 	}
-
-	@Override
-	public String getDefaultMessage() {
-		return getMessage();
-	}
-
 
 }
