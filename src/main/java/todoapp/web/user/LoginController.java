@@ -1,9 +1,14 @@
 package todoapp.web.user;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +36,13 @@ public class LoginController {
     }
 
     @PostMapping
-    public String loginProcess(LoginCommand command, Model model) {
+    public String loginProcess(@Valid LoginCommand command, BindingResult bindingResult, Model model) {
         log.debug("username: {}, password: {}", command.getUsername(), command.getPassword());
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("bindingResult", bindingResult);
+            model.addAttribute("message", "사용자 입력 값이 올바르지 않습니다.");
+        }
 
         try {
             // 사용자 저장소에 사용자가 있을 경우: 비밀번호 일치 확인
@@ -49,9 +59,12 @@ public class LoginController {
 
         return "redirect:/todos";
     }
-    
+
     static class LoginCommand {
+        @Size(min = 4, max = 20)
         private String username;
+
+        @NotBlank
         private String password;
 
         public String getUsername() {
