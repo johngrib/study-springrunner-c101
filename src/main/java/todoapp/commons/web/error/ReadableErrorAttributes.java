@@ -53,25 +53,21 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
 
         log.debug("나는 일하고 있다");
 
-//        if (error instanceof MethodArgumentNotValidException) {
-//			attributes.put("message", "사용자 입력 값이 올바르지 않습니다.");
-//		}
+        if (Objects.nonNull(error)) {
+            if (MessageSourceResolvable.class.isAssignableFrom(error.getClass())) {
+                String errorMessage = messageSource.getMessage((MessageSourceResolvable) error, webRequest.getLocale());
+                attributes.put("message", errorMessage);
 
-		if (Objects.nonNull(error)) {
-			if (MessageSourceResolvable.class.isAssignableFrom(error.getClass())) {
-				String errorMessage = messageSource.getMessage((MessageSourceResolvable) error, webRequest.getLocale());
-				attributes.put("message", errorMessage);
+            } else {
+                // Exception.MethodArgumentNotValidException
+                String errorCode = String.format("Exception.%s", error.getClass().getSimpleName());
+                String defaultMessage = error.getMessage();
+                String errorMeesage = messageSource.getMessage(errorCode, new Object[0], defaultMessage,
+                        webRequest.getLocale());
 
-			} else {
-				// Exception.MethodArgumentNotValidException
-				String errorCode = String.format("Exception.%s", error.getClass().getSimpleName());
-				String defaultMessage = error.getMessage();
-				String errorMeesage = messageSource.getMessage(errorCode, new Object[0], defaultMessage,
-						webRequest.getLocale());
-
-				attributes.put("message", errorMeesage);
-			}
-		}
+                attributes.put("message", errorMeesage);
+            }
+        }
 
         return attributes;
     }
