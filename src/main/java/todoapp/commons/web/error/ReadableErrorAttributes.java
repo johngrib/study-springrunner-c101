@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.context.request.WebRequest;
@@ -57,12 +58,19 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
 //		}
 
 		if (Objects.nonNull(error)) {
-			String errorCode = String.format("Exception.%s", error.getClass().getSimpleName());
-			String defaultMessage = error.getMessage();
-			String errorMeesage = messageSource.getMessage(errorCode, new Object[0], defaultMessage,
-					webRequest.getLocale());
+			if (MessageSourceResolvable.class.isAssignableFrom(error.getClass())) {
+				String errorMessage = messageSource.getMessage((MessageSourceResolvable) error, webRequest.getLocale());
+				attributes.put("message", errorMessage);
 
-			attributes.put("message", errorMeesage);
+			} else {
+				// Exception.MethodArgumentNotValidException
+				String errorCode = String.format("Exception.%s", error.getClass().getSimpleName());
+				String defaultMessage = error.getMessage();
+				String errorMeesage = messageSource.getMessage(errorCode, new Object[0], defaultMessage,
+						webRequest.getLocale());
+
+				attributes.put("message", errorMeesage);
+			}
 		}
 
         return attributes;
