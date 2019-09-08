@@ -29,15 +29,17 @@ import javax.servlet.http.HttpServletResponse;
 public class RolesVerifyHandlerInterceptor implements HandlerInterceptor, RolesAllowedSupport {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private UserSessionRepository sessionRepository;
-
-    public RolesVerifyHandlerInterceptor(UserSessionRepository sessionRepository) {
-        this.sessionRepository = sessionRepository;
-    }
 
     @Override
     public final boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+
+//         사용자 인증 정보
+//        request.getUserPrincipal();
+
+//         사용자 권한이 있습니까?
+//        request.isUserInRole(role)
+
         if (handler instanceof HandlerMethod) {
             RolesAllowed rolesAllowed = ((HandlerMethod) handler).getMethodAnnotation(RolesAllowed.class);
 
@@ -50,13 +52,12 @@ public class RolesVerifyHandlerInterceptor implements HandlerInterceptor, RolesA
                 log.debug("rolesAllowed: {}", rolesAllowed);
 
                 // 1. 로그인이 되어 있나요?
-                UserSession userSession = sessionRepository.get();
-                if (Objects.isNull(userSession)) {
+                if (Objects.isNull(request.getUserPrincipal())) {
                     throw new UnauthorizedAccessException();
                 }
 
                 // 2. 권한은 적절한가요?
-                Set<String> matchedRoles = Stream.of(rolesAllowed.value()).filter(role -> userSession.hasRole(role))
+                Set<String> matchedRoles = Stream.of(rolesAllowed.value()).filter(role -> request.isUserInRole(role))
                         .collect(Collectors.toSet());
 
                 log.debug("matched Roles: {}", matchedRoles);

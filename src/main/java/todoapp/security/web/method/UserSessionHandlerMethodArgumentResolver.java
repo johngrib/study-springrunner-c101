@@ -9,6 +9,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import todoapp.security.UserSession;
 import todoapp.security.UserSessionRepository;
 
+// UserSession이 Principal을 구현하게 되어 이 클래스는 작동하지 않음.
 public class UserSessionHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     private UserSessionRepository sessionRepository;
